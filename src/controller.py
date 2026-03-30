@@ -230,15 +230,15 @@ class Controller:
         return lv_map
     
     def get_left_sudden_death(self):
-        return self.game_time - 105 + 31 - 8
+        return self.game_time - 420 + 31 - 8
 
     def get_right_sudden_death(self):
-        return self.get_level_x_pixel_size() - self.game_time + 105 + 8 - 31
+        return self.get_level_x_pixel_size() - self.game_time + 420 + 8 - 31
     
     def get_y_speed(self):
         return self.my_y_speed
     
     def is_sudden_death_active(self):
-        if (self.game_time - 105 + 31 > 0):
+        if (self.game_time - 420 + 31 > 0):
             return True
         return False

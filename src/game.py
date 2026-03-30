@@ -21,7 +21,7 @@ death = [False, False]
 # Get team names
 team_names = ["Pablo's cool long team name", "Dani"]
 # Create the text font that counts each teams points
-font = pygame.font.Font(None, 36)
+font = pygame.font.Font(None, 28)
 # Create a fixed-resolution surface
 base_surface = None
 
@@ -49,6 +49,9 @@ controller_2 = None
 
 a_holding = False
 b_holding = False
+
+# Assign starting frame rate
+frame_rate = 60
 
 
 def set_up(map_file, player1, player2):
@@ -99,7 +102,7 @@ def set_up(map_file, player1, player2):
 
 
 def loop():
-    global current_level, a_holding, b_holding, death, sudden_death
+    global current_level, a_holding, b_holding, death, sudden_death, frame_rate
 
     photo_finish_time = 0
     game_time = 0
@@ -112,6 +115,15 @@ def loop():
                 pygame.quit()
                 sys.exit()
 
+        # <~~~~Change Frame Rate~~~~>
+        keys=pygame.key.get_pressed()
+        if (keys[pygame.K_1]): # Normal speed
+            frame_rate = 60
+        elif (keys[pygame.K_2]): # x2 speed
+            frame_rate = 120
+        elif (keys[pygame.K_3]): # x4 speed
+            frame_rate = 240
+
         # <~~~~Logic Block~~~~>
         if (not death[0] and not death[1]):
             fish_pos = []
@@ -122,8 +134,8 @@ def loop():
             
             controller_1.clear()
             controller_2.clear()
-            controller_1.update(fish_pos, fish_state, player_a.get_pos(), player_b.get_pos(), game_time // 4, player_a.get_y_speed())
-            controller_2.update(fish_pos, fish_state, player_b.get_pos(), player_a.get_pos(), game_time // 4, player_b.get_y_speed())
+            controller_1.update(fish_pos, fish_state, player_a.get_pos(), player_b.get_pos(), game_time, player_a.get_y_speed())
+            controller_2.update(fish_pos, fish_state, player_b.get_pos(), player_a.get_pos(), game_time, player_b.get_y_speed())
             controller_1.behavior()
             controller_2.behavior()
 
@@ -163,10 +175,10 @@ def loop():
                 if (current.is_hit(player_b.get_pos())):
                     death[1] = True
                     team_points[0] += 1
-            if (sudden_death.check_death(game_time // 4, player_a.get_pos())):
+            if (sudden_death.check_death(game_time, player_a.get_pos())):
                 death[0] = True
                 team_points[1] += 1
-            if (sudden_death.check_death(game_time // 4, player_b.get_pos())):
+            if (sudden_death.check_death(game_time, player_b.get_pos())):
                 death[1] = True
                 team_points[0] += 1
             game_time += 1
@@ -190,7 +202,7 @@ def loop():
         player_b.draw(base_surface)
 
         # Draw Sudden Death
-        sudden_death.draw_spikes(base_surface, sudden_death_sprites, game_time // 4)
+        sudden_death.draw_spikes(base_surface, sudden_death_sprites, game_time)
 
         # Draw logos
         # base_surface.blit(logos, (base_resolution[0]-270, 20))
@@ -201,5 +213,5 @@ def loop():
 
         draw_game(window, base_surface, current_level)
 
-        # Limit to 60 FPS
-        pygame.time.Clock().tick(60)
+        # Limit to frame_rate FPS
+        pygame.time.Clock().tick(frame_rate)
